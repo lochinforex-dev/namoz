@@ -28,6 +28,7 @@ li:last-child{border-bottom:0}
 li.hozir{background:var(--hi);font-weight:700}
 li.quyosh{color:var(--mute)}
 .xabar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--mute)}
+p.holat{margin:12px 0 0;text-align:center;color:var(--mute);font-size:14px}
 footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
 </style>
 </head>
@@ -45,27 +46,62 @@ footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
   </section>
   <div class="xabar" id="xabar" hidden></div>
   <ul id="royxat"></ul>
-  <footer id="manba"></footer>
+  <p class="holat" id="holat"></p>
+  <footer id="manba">Manba: islom.uz</footer>
 </main>
-<script src="data.js"></script>
 <script>
+const API="https://namoz-vaqtlari.more-info.uz:444/api/GetDailyPrayTimes/";
+const HUDUDLAR={"Toshkent":"Toshkent","Samarqand":"Samarqand","Farg'ona":"Farg'ona","Andijon":"Andijon","Namangan":"Namangan","Buxoro":"Buxoro","Qashqadaryo":"Qashqadaryo","Surxondaryo":"Surxandaryo","Xorazm":"Xiva","Navoiy":"Navoiy","Jizzax":"Jizzax","Sirdaryo":"Sirdaryo","Qoraqalpog'iston":"Qoraqalpog'iston"};
 const NOM=["Bomdod","Quyosh","Peshin","Asr","Shom","Xufton"];
 const OY=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"];
+const KUN=15;
 const $=id=>document.getElementById(id);
 const p2=n=>String(n).padStart(2,"0");
-const kalit=d=>p2(d.getMonth()+1)+"-"+p2(d.getDate());
-const vaqtlar=(h,d)=>((NAMOZ.hududlar[h]||{})[kalit(d)])||null;
+const sana=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
+const qosh=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const vaqt=(d,s)=>{const [a,b]=s.split(":");const x=new Date(d);x.setHours(+a,+b,0,0);return x};
 
-let hudud=Object.keys(NAMOZ.hududlar)[0];
-try{const s=localStorage.getItem("hudud");if(s&&NAMOZ.hududlar[s])hudud=s}catch(e){}
+let kesh={};
+try{kesh=JSON.parse(localStorage.getItem("kesh"))||{}}catch(e){}
+function saqla(){
+  const eski=sana(qosh(new Date(),-2));
+  for(const h in kesh)for(const k in kesh[h])if(k<eski)delete kesh[h][k];
+  try{localStorage.setItem("kesh",JSON.stringify(kesh))}catch(e){}
+}
+const vaqtlar=(h,d)=>((kesh[h]||{})[sana(d)])||null;
 
+let hudud="Toshkent";
+try{const s=localStorage.getItem("hudud");if(s&&HUDUDLAR[s])hudud=s}catch(e){}
 const sel=$("hudud");
-Object.keys(NAMOZ.hududlar).forEach(h=>{const o=document.createElement("option");o.value=o.textContent=h;sel.append(o)});
+Object.keys(HUDUDLAR).forEach(h=>{const o=document.createElement("option");o.value=o.textContent=h;sel.append(o)});
 sel.value=hudud;
-if(sel.options.length<2)sel.hidden=true;
-sel.onchange=()=>{hudud=sel.value;try{localStorage.setItem("hudud",hudud)}catch(e){}chiz()};
-$("manba").textContent="Manba: "+NAMOZ.manba;
+sel.onchange=()=>{hudud=sel.value;try{localStorage.setItem("hudud",hudud)}catch(e){}chiz();yangila()};
+
+async function bir(h,d){
+  if(vaqtlar(h,d))return true;
+  try{
+    const r=await fetch(API+encodeURIComponent(HUDUDLAR[h])+"/"+sana(d));
+    const js=await r.json();
+    if(!js.isSuccess)return false;
+    const x=js.response;
+    const v=[x.bomdod,x.quyosh,x.peshin,x.asr,x.shom,x.xufton].map(t=>t?String(t).slice(0,5):null);
+    if(v.includes(null))return false;
+    (kesh[h]=kesh[h]||{})[sana(d)]=v;
+    return true;
+  }catch(e){return false}
+}
+let holat="";
+async function yangila(){
+  const h=hudud,bugun=new Date();
+  holat="Yangilanmoqda...";$("holat").textContent=holat;
+  const jobs=[];for(let i=0;i<KUN;i++)jobs.push(bir(h,qosh(bugun,i)));
+  const res=await Promise.all(jobs);
+  saqla();
+  if(h!==hudud)return;
+  holat=res[0]?"":(vaqtlar(h,bugun)?"Internet yo'q, saqlangan ma'lumot ko'rsatilmoqda":"Ma'lumot olinmadi. Internetni tekshiring.");
+  $("holat").textContent=holat;
+  chiz();
+}
 
 function chiz(){
   const now=new Date();
@@ -75,7 +111,7 @@ function chiz(){
   if(!bugun){
     $("next").hidden=true;
     $("xabar").hidden=false;
-    $("xabar").textContent="Bu kun uchun ma'lumot yo'q. Ma'lumot yangilanishi kerak.";
+    $("xabar").textContent=holat==="Yangilanmoqda..."?"Vaqtlar yuklanmoqda...":"Bu kun uchun ma'lumot yo'q.";
     return;
   }
   $("xabar").hidden=true;
@@ -97,7 +133,7 @@ function tik(){
   let nom,t;
   for(const i of [0,2,3,4,5]){const x=vaqt(now,bugun[i]);if(x>now){nom=NOM[i];t=x;break}}
   if(!t){
-    const ertaga=new Date(now);ertaga.setDate(now.getDate()+1);
+    const ertaga=qosh(now,1);
     const e=vaqtlar(hudud,ertaga);
     if(e){nom="Bomdod (ertaga)";t=vaqt(ertaga,e[0])}
   }
@@ -109,6 +145,7 @@ function tik(){
   if(s===0)setTimeout(chiz,1000);
 }
 chiz();
+yangila();
 setInterval(tik,1000);
 setInterval(chiz,60000);
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
