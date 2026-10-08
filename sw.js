@@ -1,4 +1,4 @@
-const CACHE = "namoz-v3";
+const CACHE = "namoz-v4";
 const FAYLLAR = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
