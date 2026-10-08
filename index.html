@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b5d3b">
+<title>Namoz vaqtlari</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#f1f5f2;--card:#fff;--ink:#12201a;--mute:#66786f;--acc:#0b5d3b;--hi:#e3f2e9;--line:#d6e0da}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1612;--card:#16221c;--ink:#e8f1ec;--mute:#8fa59a;--acc:#4ade80;--hi:#1d3a2b;--line:#27382f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+main{max-width:520px;margin:0 auto;padding:22px 0 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{font-size:22px;margin:0}
+select{font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.sana{color:var(--mute);margin:2px 0 18px}
+.next{background:var(--acc);color:#fff;border-radius:18px;padding:22px;margin-bottom:16px}
+@media (prefers-color-scheme:dark){.next{color:#06210f}}
+.next small{opacity:.85;font-size:15px}
+.next .nom{font-size:30px;font-weight:700;letter-spacing:-.01em}
+.next .qolgan{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:6px}
+ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+li{display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+li:last-child{border-bottom:0}
+li.hozir{background:var(--hi);font-weight:700}
+li.quyosh{color:var(--mute)}
+.xabar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--mute)}
+footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Namoz vaqtlari</h1>
+    <select id="hudud" aria-label="Hudud"></select>
+  </header>
+  <p class="sana" id="sana"></p>
+  <section class="next" id="next" hidden>
+    <small>Keyingi namoz</small>
+    <div class="nom" id="nom"></div>
+    <div class="qolgan" id="qolgan"></div>
+  </section>
+  <div class="xabar" id="xabar" hidden></div>
+  <ul id="royxat"></ul>
+  <footer id="manba"></footer>
+</main>
+<script src="data.js"></script>
+<script>
+const NOM=["Bomdod","Quyosh","Peshin","Asr","Shom","Xufton"];
+const OY=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"];
+const $=id=>document.getElementById(id);
+const p2=n=>String(n).padStart(2,"0");
+const kalit=d=>p2(d.getMonth()+1)+"-"+p2(d.getDate());
+const vaqtlar=(h,d)=>((NAMOZ.hududlar[h]||{})[kalit(d)])||null;
+const vaqt=(d,s)=>{const [a,b]=s.split(":");const x=new Date(d);x.setHours(+a,+b,0,0);return x};
+
+let hudud=Object.keys(NAMOZ.hududlar)[0];
+try{const s=localStorage.getItem("hudud");if(s&&NAMOZ.hududlar[s])hudud=s}catch(e){}
+
+const sel=$("hudud");
+Object.keys(NAMOZ.hududlar).forEach(h=>{const o=document.createElement("option");o.value=o.textContent=h;sel.append(o)});
+sel.value=hudud;
+if(sel.options.length<2)sel.hidden=true;
+sel.onchange=()=>{hudud=sel.value;try{localStorage.setItem("hudud",hudud)}catch(e){}chiz()};
+$("manba").textContent="Manba: "+NAMOZ.manba;
+
+function chiz(){
+  const now=new Date();
+  $("sana").textContent=now.getDate()+" "+OY[now.getMonth()]+" "+now.getFullYear();
+  const bugun=vaqtlar(hudud,now);
+  const ul=$("royxat");ul.innerHTML="";
+  if(!bugun){
+    $("next").hidden=true;
+    $("xabar").hidden=false;
+    $("xabar").textContent="Bu kun uchun ma'lumot yo'q. Ma'lumot yangilanishi kerak.";
+    return;
+  }
+  $("xabar").hidden=true;
+  let keyin=-1;
+  for(const i of [0,2,3,4,5]){if(vaqt(now,bugun[i])>now){keyin=i;break}}
+  NOM.forEach((n,i)=>{
+    const li=document.createElement("li");
+    if(i===1)li.className="quyosh";
+    if(i===keyin)li.className="hozir";
+    li.innerHTML="<span>"+n+"</span><span>"+bugun[i]+"</span>";
+    ul.append(li);
+  });
+  tik();
+}
+function tik(){
+  const now=new Date();
+  const bugun=vaqtlar(hudud,now);
+  if(!bugun)return;
+  let nom,t;
+  for(const i of [0,2,3,4,5]){const x=vaqt(now,bugun[i]);if(x>now){nom=NOM[i];t=x;break}}
+  if(!t){
+    const ertaga=new Date(now);ertaga.setDate(now.getDate()+1);
+    const e=vaqtlar(hudud,ertaga);
+    if(e){nom="Bomdod (ertaga)";t=vaqt(ertaga,e[0])}
+  }
+  if(!t){$("next").hidden=true;return}
+  $("next").hidden=false;
+  $("nom").textContent=nom;
+  const s=Math.max(0,Math.floor((t-now)/1000));
+  $("qolgan").textContent=p2(Math.floor(s/3600))+":"+p2(Math.floor(s%3600/60))+":"+p2(s%60);
+  if(s===0)setTimeout(chiz,1000);
+}
+chiz();
+setInterval(tik,1000);
+setInterval(chiz,60000);
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
+</script>
+</body>
+</html>
