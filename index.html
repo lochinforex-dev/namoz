@@ -8,147 +8,181 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <style>
-:root{--bg:#f1f5f2;--card:#fff;--ink:#12201a;--mute:#66786f;--acc:#0b5d3b;--hi:#e3f2e9;--line:#d6e0da}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1612;--card:#16221c;--ink:#e8f1ec;--mute:#8fa59a;--acc:#4ade80;--hi:#1d3a2b;--line:#27382f}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
-main{max-width:520px;margin:0 auto;padding:22px 0 40px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-h1{font-size:22px;margin:0}
-select{font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
-.sana{color:var(--mute);margin:2px 0 18px}
-.next{background:var(--acc);color:#fff;border-radius:18px;padding:22px;margin-bottom:16px}
-@media (prefers-color-scheme:dark){.next{color:#06210f}}
-.next small{opacity:.85;font-size:15px}
-.next .nom{font-size:30px;font-weight:700;letter-spacing:-.01em}
-.next .qolgan{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:6px}
-ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+:root{--bg:#f1f5f2;--card:#fff;--ink:#12201a;--mute:#66786f;--acc:#0b5d3b;--on:#fff;--hi:#e3f2e9;--line:#d6e0da}
+:root[data-theme=dark]{--bg:#0e1612;--card:#16221c;--ink:#e8f1ec;--mute:#8fa59a;--acc:#4ade80;--on:#06210f;--hi:#1d3a2b;--line:#27382f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top)}
+main{max-width:520px;margin:0 auto;padding:20px 16px 110px}
+h1{font-size:24px;margin:0}h2{font-size:19px;margin:22px 0 10px}
+.sub{color:var(--mute);margin:2px 0 16px}
+.tab{display:none}.tab.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+.next{background:var(--acc);color:var(--on);border-radius:18px;padding:22px;margin-bottom:16px}
+.next small{opacity:.85;font-size:15px}.nom{font-size:30px;font-weight:700}
+.qolgan{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:6px}
+ul{list-style:none;margin:0;padding:0;overflow:hidden}
 li{display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
-li:last-child{border-bottom:0}
-li.hozir{background:var(--hi);font-weight:700}
-li.quyosh{color:var(--mute)}
-.xabar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--mute)}
-p.holat{margin:12px 0 0;text-align:center;color:var(--mute);font-size:14px}
+li:last-child{border:0}li.hozir{background:var(--hi);font-weight:700}li.q{color:var(--mute)}
+.xabar,.holat{color:var(--mute);text-align:center;font-size:15px;margin:12px 0}
+.xabar{padding:18px}
+.jadval{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;text-align:center}
+th,td{padding:10px 6px;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}
+tr.bugun td{background:var(--hi);font-weight:700}
+.tas{display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:10px}
+#tbtn{width:220px;height:220px;border-radius:50%;border:0;background:var(--acc);color:var(--on);font-size:64px;font-weight:700;font-variant-numeric:tabular-nums;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#tbtn:active{transform:scale(.97)}
+.row{display:flex;gap:10px;align-items:center;justify-content:center}
+select,.btn{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.btn{cursor:pointer}
+.ikki{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ikki div{padding:16px;text-align:center}.ikki small{color:var(--mute)}.ikki b{display:block;font-size:30px;font-variant-numeric:tabular-nums}
+.dua{padding:16px;margin-bottom:12px}.dua small{color:var(--acc);font-weight:700}.dua p{margin:6px 0 0;font-style:italic}
+.set{padding:6px 16px}.set label{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.set label:last-child{border:0}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;color:var(--mute);padding:9px 0 7px;font:inherit;font-size:12px;cursor:pointer}
+nav button.on{color:var(--acc);font-weight:700}
+nav svg{display:block;margin:0 auto 2px;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <h1>Namoz vaqtlari</h1>
-    <select id="hudud" aria-label="Hudud"></select>
-  </header>
-  <p class="sana" id="sana"></p>
-  <section class="next" id="next" hidden>
-    <small>Keyingi namoz</small>
-    <div class="nom" id="nom"></div>
-    <div class="qolgan" id="qolgan"></div>
-  </section>
-  <div class="xabar" id="xabar" hidden></div>
-  <ul id="royxat"></ul>
+<section class="tab on" id="t-vaqt">
+  <h1 id="hn">Namoz vaqtlari</h1><p class="sub" id="sana"></p>
+  <div class="next" id="next" hidden><small>Keyingi namoz</small><div class="nom" id="nom"></div><div class="qolgan" id="qolgan"></div></div>
+  <div class="card xabar" id="xabar" hidden></div>
+  <ul class="card" id="royxat"></ul>
   <p class="holat" id="holat"></p>
-  <footer id="manba">Manba: islom.uz</footer>
+</section>
+<section class="tab" id="t-oy">
+  <h1>Oylik jadval</h1><p class="sub" id="oyn"></p>
+  <div class="card jadval"><table id="jad"></table></div>
+</section>
+<section class="tab" id="t-tas">
+  <h1>Tasbeh</h1><p class="sub">Bosib sanang</p>
+  <div class="tas">
+    <button id="tbtn" aria-label="Sanash">0</button>
+    <div class="row"><select id="maqsad"><option value="33">Maqsad: 33</option><option value="99">Maqsad: 99</option><option value="100">Maqsad: 100</option><option value="0">Cheksiz</option></select><button class="btn" id="treset">Tozalash</button></div>
+  </div>
+</section>
+<section class="tab" id="t-roza">
+  <h1>Ro'za</h1><p class="sub">Bugungi saharlik va iftorlik</p>
+  <div class="ikki"><div class="card"><small>Saharlik tugashi</small><b id="sah">--:--</b></div><div class="card"><small>Iftorlik</small><b id="ift">--:--</b></div></div>
+  <h2>Duolar</h2>
+  <div class="card dua"><small>Ro'za tutish niyati</small><p>Navaytu an asuma savma shahri ramazona minal-fajri ilal-mag'ribi xolisan lillahi ta'ala</p></div>
+  <div class="card dua"><small>Og'iz ochish (iftor) duosi</small><p>Allohumma laka sumtu va bika amantu va 'ala rizqika aftortu</p></div>
+</section>
+<section class="tab" id="t-set">
+  <h1>Sozlamalar</h1><p class="sub">&nbsp;</p>
+  <div class="card set">
+    <label>Hudud <select id="hudud"></select></label>
+    <label>Mavzu <select id="tema"><option value="auto">Avtomatik</option><option value="light">Yorug'</option><option value="dark">Qorong'i</option></select></label>
+  </div>
+  <footer>Manba: islom.uz<br>Namoz vaqtlari 15 kunga oldindan saqlanadi va internetsiz ham ko'rinadi.</footer>
+</section>
 </main>
+<nav id="nav">
+<button class="on" data-t="vaqt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Vaqtlar</button>
+<button data-t="oy"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Oylik</button>
+<button data-t="tas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/></svg>Tasbeh</button>
+<button data-t="roza"><svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 6 6 0 0 0 10 10z"/></svg>Ro'za</button>
+<button data-t="set"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Sozlama</button>
+</nav>
 <script>
 const API="https://namoz-vaqtlari.more-info.uz:444/api/GetDailyPrayTimes/";
 const HUDUDLAR={"Toshkent":"Toshkent","Samarqand":"Samarqand","Farg'ona":"Farg'ona","Andijon":"Andijon","Namangan":"Namangan","Buxoro":"Buxoro","Qashqadaryo":"Qashqadaryo","Surxondaryo":"Surxandaryo","Xorazm":"Xiva","Navoiy":"Navoiy","Jizzax":"Jizzax","Sirdaryo":"Sirdaryo","Qoraqalpog'iston":"Qoraqalpog'iston"};
 const NOM=["Bomdod","Quyosh","Peshin","Asr","Shom","Xufton"];
 const OY=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"];
-const KUN=15;
 const $=id=>document.getElementById(id);
 const p2=n=>String(n).padStart(2,"0");
 const sana=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
 const qosh=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const vaqt=(d,s)=>{const [a,b]=s.split(":");const x=new Date(d);x.setHours(+a,+b,0,0);return x};
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}};
+const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 
-let kesh={};
-try{kesh=JSON.parse(localStorage.getItem("kesh"))||{}}catch(e){}
+let kesh={};try{kesh=JSON.parse(get("kesh","{}"))||{}}catch(e){}
 function saqla(){
-  const eski=sana(qosh(new Date(),-2));
+  const eski=sana(qosh(new Date(),-40));
   for(const h in kesh)for(const k in kesh[h])if(k<eski)delete kesh[h][k];
-  try{localStorage.setItem("kesh",JSON.stringify(kesh))}catch(e){}
+  set("kesh",JSON.stringify(kesh));
 }
 const vaqtlar=(h,d)=>((kesh[h]||{})[sana(d)])||null;
-
-let hudud="Toshkent";
-try{const s=localStorage.getItem("hudud");if(s&&HUDUDLAR[s])hudud=s}catch(e){}
-const sel=$("hudud");
-Object.keys(HUDUDLAR).forEach(h=>{const o=document.createElement("option");o.value=o.textContent=h;sel.append(o)});
-sel.value=hudud;
-sel.onchange=()=>{hudud=sel.value;try{localStorage.setItem("hudud",hudud)}catch(e){}chiz();yangila()};
+let hudud=get("hudud","Toshkent");if(!HUDUDLAR[hudud])hudud="Toshkent";
 
 async function bir(h,d){
   if(vaqtlar(h,d))return true;
   try{
     const r=await fetch(API+encodeURIComponent(HUDUDLAR[h])+"/"+sana(d));
-    const js=await r.json();
-    if(!js.isSuccess)return false;
+    const js=await r.json();if(!js.isSuccess)return false;
     const x=js.response;
     const v=[x.bomdod,x.quyosh,x.peshin,x.asr,x.shom,x.xufton].map(t=>t?String(t).slice(0,5):null);
     if(v.includes(null))return false;
-    (kesh[h]=kesh[h]||{})[sana(d)]=v;
-    return true;
+    (kesh[h]=kesh[h]||{})[sana(d)]=v;return true;
   }catch(e){return false}
 }
 let holat="";
 async function yangila(){
-  const h=hudud,bugun=new Date();
+  const h=hudud,t=new Date();
   holat="Yangilanmoqda...";$("holat").textContent=holat;
-  const jobs=[];for(let i=0;i<KUN;i++)jobs.push(bir(h,qosh(bugun,i)));
-  const res=await Promise.all(jobs);
-  saqla();
-  if(h!==hudud)return;
-  holat=res[0]?"":(vaqtlar(h,bugun)?"Internet yo'q, saqlangan ma'lumot ko'rsatilmoqda":"Ma'lumot olinmadi. Internetni tekshiring.");
-  $("holat").textContent=holat;
-  chiz();
+  const res=await Promise.all(Array.from({length:15},(_,i)=>bir(h,qosh(t,i))));
+  saqla();if(h!==hudud)return;
+  holat=res[0]?"":(vaqtlar(h,t)?"Internet yo'q, saqlangan ma'lumot ko'rsatilmoqda":"Ma'lumot olinmadi. Internetni tekshiring.");
+  $("holat").textContent=holat;chiz();
 }
-
 function chiz(){
   const now=new Date();
+  $("hn").textContent=hudud;
   $("sana").textContent=now.getDate()+" "+OY[now.getMonth()]+" "+now.getFullYear();
-  const bugun=vaqtlar(hudud,now);
-  const ul=$("royxat");ul.innerHTML="";
-  if(!bugun){
-    $("next").hidden=true;
-    $("xabar").hidden=false;
-    $("xabar").textContent=holat==="Yangilanmoqda..."?"Vaqtlar yuklanmoqda...":"Bu kun uchun ma'lumot yo'q.";
-    return;
-  }
+  const b=vaqtlar(hudud,now),ul=$("royxat");ul.innerHTML="";
+  $("sah").textContent=b?b[0]:"--:--";$("ift").textContent=b?b[4]:"--:--";
+  if(!b){$("next").hidden=true;$("xabar").hidden=false;$("xabar").textContent=holat==="Yangilanmoqda..."?"Vaqtlar yuklanmoqda...":"Bu kun uchun ma'lumot yo'q.";return}
   $("xabar").hidden=true;
-  let keyin=-1;
-  for(const i of [0,2,3,4,5]){if(vaqt(now,bugun[i])>now){keyin=i;break}}
-  NOM.forEach((n,i)=>{
-    const li=document.createElement("li");
-    if(i===1)li.className="quyosh";
-    if(i===keyin)li.className="hozir";
-    li.innerHTML="<span>"+n+"</span><span>"+bugun[i]+"</span>";
-    ul.append(li);
-  });
+  let k=-1;for(const i of [0,2,3,4,5])if(vaqt(now,b[i])>now){k=i;break}
+  NOM.forEach((n,i)=>{const li=document.createElement("li");if(i===1)li.className="q";if(i===k)li.className="hozir";li.innerHTML="<span>"+n+"</span><span>"+b[i]+"</span>";ul.append(li)});
   tik();
 }
 function tik(){
-  const now=new Date();
-  const bugun=vaqtlar(hudud,now);
-  if(!bugun)return;
+  const now=new Date(),b=vaqtlar(hudud,now);if(!b)return;
   let nom,t;
-  for(const i of [0,2,3,4,5]){const x=vaqt(now,bugun[i]);if(x>now){nom=NOM[i];t=x;break}}
-  if(!t){
-    const ertaga=qosh(now,1);
-    const e=vaqtlar(hudud,ertaga);
-    if(e){nom="Bomdod (ertaga)";t=vaqt(ertaga,e[0])}
-  }
+  for(const i of [0,2,3,4,5]){const x=vaqt(now,b[i]);if(x>now){nom=NOM[i];t=x;break}}
+  if(!t){const e=vaqtlar(hudud,qosh(now,1));if(e){nom="Bomdod (ertaga)";t=vaqt(qosh(now,1),e[0])}}
   if(!t){$("next").hidden=true;return}
-  $("next").hidden=false;
-  $("nom").textContent=nom;
+  $("next").hidden=false;$("nom").textContent=nom;
   const s=Math.max(0,Math.floor((t-now)/1000));
   $("qolgan").textContent=p2(Math.floor(s/3600))+":"+p2(Math.floor(s%3600/60))+":"+p2(s%60);
   if(s===0)setTimeout(chiz,1000);
 }
-chiz();
-yangila();
-setInterval(tik,1000);
-setInterval(chiz,60000);
-if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
+async function oyChiz(){
+  const n=new Date(),y=n.getFullYear(),m=n.getMonth(),kun=new Date(y,m+1,0).getDate();
+  $("oyn").textContent=hudud+", "+OY[m]+" "+y;
+  const h=hudud;
+  await Promise.all(Array.from({length:kun},(_,i)=>bir(h,new Date(y,m,i+1))));saqla();
+  let s="<tr><th>Kun</th><th>Bom</th><th>Quy</th><th>Pesh</th><th>Asr</th><th>Shom</th><th>Xuf</th></tr>";
+  for(let i=1;i<=kun;i++){const v=vaqtlar(h,new Date(y,m,i));
+    s+="<tr"+(i===n.getDate()?' class="bugun"':"")+"><td>"+i+"</td>"+(v?v.map(x=>"<td>"+x+"</td>").join(""):'<td colspan="6">—</td>')+"</tr>"}
+  $("jad").innerHTML=s;
+}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id==="t-"+b.dataset.t));
+  if(b.dataset.t==="oy")oyChiz();scrollTo(0,0);
+});
+const sel=$("hudud");
+Object.keys(HUDUDLAR).forEach(h=>{const o=document.createElement("option");o.value=o.textContent=h;sel.append(o)});
+sel.value=hudud;
+sel.onchange=()=>{hudud=sel.value;set("hudud",hudud);chiz();yangila()};
+function tema(){const m=get("tema","auto");const d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light";document.querySelector('meta[name=theme-color]').content=d?"#0e1612":"#0b5d3b"}
+$("tema").value=get("tema","auto");$("tema").onchange=()=>{set("tema",$("tema").value);tema()};tema();
+let sn=+get("tasbeh",0),mq=+get("maqsad",33);
+$("maqsad").value=String(mq);$("tbtn").textContent=sn;
+$("tbtn").onclick=()=>{sn++;if(mq&&sn>mq)sn=1;$("tbtn").textContent=sn;set("tasbeh",sn);if(navigator.vibrate)navigator.vibrate(mq&&sn===mq?[80,40,80]:12)};
+$("treset").onclick=()=>{sn=0;$("tbtn").textContent=0;set("tasbeh",0)};
+$("maqsad").onchange=()=>{mq=+$("maqsad").value;set("maqsad",mq)};
+chiz();yangila();setInterval(tik,1000);setInterval(chiz,60000);
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
 </script>
 </body>
 </html>
