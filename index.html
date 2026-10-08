@@ -43,6 +43,7 @@ select,.btn{font:inherit;color:var(--ink);background:var(--card);border:1.5px so
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;background:none;border:0;color:var(--mute);padding:9px 0 7px;font:inherit;font-size:12px;cursor:pointer}
 nav button.on{color:var(--acc);font-weight:700}
+nav button[hidden]{display:none}
 nav svg{display:block;margin:0 auto 2px;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
 </style>
@@ -69,10 +70,13 @@ footer{margin-top:22px;color:var(--mute);font-size:14px;text-align:center}
 </section>
 <section class="tab" id="t-roza">
   <h1>Ro'za</h1><p class="sub">Bugungi saharlik va iftorlik</p>
+  <div class="card xabar" id="rYoq" hidden></div>
+  <div id="rIch">
   <div class="ikki"><div class="card"><small>Saharlik tugashi</small><b id="sah">--:--</b></div><div class="card"><small>Iftorlik</small><b id="ift">--:--</b></div></div>
   <h2>Duolar</h2>
   <div class="card dua"><small>Ro'za tutish niyati</small><p>Navaytu an asuma savma shahri ramazona minal-fajri ilal-mag'ribi xolisan lillahi ta'ala</p></div>
   <div class="card dua"><small>Og'iz ochish (iftor) duosi</small><p>Allohumma laka sumtu va bika amantu va 'ala rizqika aftortu</p></div>
+  </div>
 </section>
 <section class="tab" id="t-set">
   <h1>Sozlamalar</h1><p class="sub">&nbsp;</p>
@@ -100,6 +104,10 @@ const p2=n=>String(n).padStart(2,"0");
 const sana=d=>d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());
 const qosh=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const vaqt=(d,s)=>{const [a,b]=s.split(":");const x=new Date(d);x.setHours(+a,+b,0,0);return x};
+const HOY=["Muharram","Safar","Rabiul avval","Rabiul oxir","Jumadul avval","Jumadul oxir","Rajab","Sha'bon","Ramazon","Shavvol","Zulqa'da","Zulhijja"];
+function hijriy(d){try{const p={};new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(d).forEach(x=>p[x.type]=+x.value);return p.month?p:null}catch(e){return null}}
+function hijriMatn(d){const h=hijriy(d);return h?h.day+" "+HOY[h.month-1]+" "+h.year:""}
+function ramazonmi(){const h=hijriy(new Date());return !!h&&h.month===9}
 const get=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}};
 const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 
@@ -135,7 +143,7 @@ async function yangila(){
 function chiz(){
   const now=new Date();
   $("hn").textContent=hudud;
-  $("sana").textContent=now.getDate()+" "+OY[now.getMonth()]+" "+now.getFullYear();
+  $("sana").textContent=now.getDate()+" "+OY[now.getMonth()]+" "+now.getFullYear()+(hijriMatn(now)?"  ·  "+hijriMatn(now):"");
   const b=vaqtlar(hudud,now),ul=$("royxat");ul.innerHTML="";
   $("sah").textContent=b?b[0]:"--:--";$("ift").textContent=b?b[4]:"--:--";
   if(!b){$("next").hidden=true;$("xabar").hidden=false;$("xabar").textContent=holat==="Yangilanmoqda..."?"Vaqtlar yuklanmoqda...":"Bu kun uchun ma'lumot yo'q.";return}
@@ -181,6 +189,14 @@ $("maqsad").value=String(mq);$("tbtn").textContent=sn;
 $("tbtn").onclick=()=>{sn++;if(mq&&sn>mq)sn=1;$("tbtn").textContent=sn;set("tasbeh",sn);if(navigator.vibrate)navigator.vibrate(mq&&sn===mq?[80,40,80]:12)};
 $("treset").onclick=()=>{sn=0;$("tbtn").textContent=0;set("tasbeh",0)};
 $("maqsad").onchange=()=>{mq=+$("maqsad").value;set("maqsad",mq)};
+function rozaHolat(){
+  const r=ramazonmi();$("rIch").hidden=!r;$("rYoq").hidden=r;
+  if(r)return;
+  let n=0;const t=new Date();
+  for(let i=1;i<=400;i++){const h=hijriy(qosh(t,i));if(h&&h.month===9&&h.day===1){n=i;break}}
+  $("rYoq").innerHTML="Hozir Ro'za oyi emas.<br>Bu bo'lim Ro'za oyida ochiladi."+(n?"<br><br><b>Ramazongacha taxminan "+n+" kun qoldi.</b>":"");
+}
+rozaHolat();
 chiz();yangila();setInterval(tik,1000);setInterval(chiz,60000);
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
 </script>
