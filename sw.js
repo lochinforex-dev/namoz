@@ -1,5 +1,5 @@
-const CACHE = "namoz-v1";
-const FAYLLAR = ["./", "./index.html", "./data.js", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const CACHE = "namoz-v3";
+const FAYLLAR = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FAYLLAR)));
@@ -14,5 +14,6 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
+  if(new URL(e.request.url).origin!==location.origin)return;
   e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
 });
